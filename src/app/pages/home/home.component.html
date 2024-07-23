@@ -1,0 +1,297 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+
+
+
+
+
+
+
+
+
+<div class="container nabigasyon">
+    <h1 class="title">ToDo Dashboard</h1>
+    <button class="boton-elegante" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add Task</button>
+</div>
+
+<button (click)="logout()" class="floating-button removeoutline">
+  <i class="fa-solid fa-arrow-right-from-bracket"></i>
+</button>
+
+
+<div class="container sakalam">
+  <div class="row">
+    <div class="col-8">
+      <div class="greeting-card">
+        <div class="side1">
+          <div class="card-header">
+            <div class="date-time">
+              <i class="fa fa-calendar"></i> {{currentDate}}
+            </div>
+          </div>
+          <div class="card-content">
+            <h1>Welcome back, {{ username }}!</h1>
+            <p>Stay safe and productive this day!</p>
+          </div>
+        </div>
+        <div class="side2">
+          <div class="card-footer">
+            <img src="assets/hero.png" alt="bata" class="bata img-fluid">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="latest">
+        <p class="lats">NEAR DUE</p>
+        <div class="card" *ngIf="nearestDeadlineTask; else noTasks">
+          <div class="titlee">
+            <h3 class="card__title">{{nearestDeadlineTask.title}}</h3>
+            <p class="card__content statustext">{{nearestDeadlineTask.status}}</p>
+          </div>
+          <p class="card__content">{{nearestDeadlineTask.description}}</p>
+          <div class="item-due">
+            <span class="due-label" [ngStyle]="{ backgroundColor: formatDueDate(nearestDeadlineTask.due_date, nearestDeadlineTask.status).color, color: 'white' }">
+              {{ formatDueDate(nearestDeadlineTask.due_date, nearestDeadlineTask.status).formattedDate }}
+            </span>
+          </div>
+        </div>
+        <ng-template #noTasks>
+          <p style="font-style: italic; text-align: center;">No tasks near due date.</p>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+<div class="container mt-5">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="todo-category"
+             cdkDropList
+             #todoList="cdkDropList"
+             [cdkDropListData]="todoTable"
+             [cdkDropListConnectedTo]="[inprogressList, doneList]"
+             id="todo"
+             (cdkDropListDropped)="drop($event)">
+          <div class="status">
+            <h5>To Do</h5>
+            <h3 class="howmany">{{todoLength}}</h3>
+          </div>
+       <div class="selectmo">
+        <button *ngIf="selectedTasks.size > 0 && currentContainer === 'todo'" class="btn btn-outline-danger mb-2" (click)="deleteSelectedTasks()">Delete Selected</button>
+        <button *ngIf="selectedTasks.size > 0 && currentContainer !== 'todo'" class="btn btn-outline-primary mb-2" (click)="moveSelectedTasks('todo')">Move here</button>
+       </div>
+          <div *ngFor="let todo of todoTable" class="todo-item" cdkDrag [cdkDragData]="todo">
+            <div class="sakop">
+              <label class="custom-checkbox">
+                <input type="checkbox" [id]="'todo' + todo.id" (change)="toggleSelection(todo.id, 'todo')">
+                <span class="checkmark"></span>
+              </label>
+              <div class="items">
+                <label [for]="'todo' + todo.id">{{todo.title}}</label>
+                <div class="item-due">
+                  <span class="due-label" [ngStyle]="{ backgroundColor: formatDueDate(todo.due_date, todo.status).color, color: 'white' }">
+                    {{ formatDueDate(todo.due_date, todo.status).formattedDate }}
+                  </span>
+                </div>
+              </div>
+              
+            </div>
+            <div class="action-buttons">
+              <button class="btn btn-outline-secondary btn-sm" (click)="editTask(todo.id)"><i class="fa-regular fa-pen-to-square"></i></button>
+              <button class="btn btn-outline-secondary btn-sm" (click)="deleteTask(todo.id)"><i class="fa-regular fa-trash-can"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="todo-category"
+             cdkDropList
+             #inprogressList="cdkDropList"
+             [cdkDropListData]="inProgress"
+             [cdkDropListConnectedTo]="[todoList, doneList]"
+             id="inprogress"
+             (cdkDropListDropped)="drop($event)">
+          <div class="status">
+            <h5>In Progress</h5>
+            <h3 class="howmany">{{ipr}}</h3>
+          </div>
+    <div class="selectmo">
+      <button *ngIf="selectedTasks.size > 0 && currentContainer === 'inprogress'" class="btn btn-outline-danger mb-2" (click)="deleteSelectedTasks()">Delete Selected</button>
+      <button *ngIf="selectedTasks.size > 0 && currentContainer !== 'inprogress'" class="btn btn-outline-primary mb-2" (click)="moveSelectedTasks('inprogress')">Move here</button>
+    </div>
+          <div *ngFor="let ipg of inProgress" class="todo-item" cdkDrag [cdkDragData]="ipg">
+            <div class="sakop">
+              <label class="custom-checkbox">
+                <input type="checkbox" [id]="'ipg' + ipg.id" (change)="toggleSelection(ipg.id, 'inprogress')">
+
+                <span class="checkmark"></span>
+              </label>
+              <div class="items">
+                <label [for]="'ipg' + ipg.id">{{ipg.title}}</label>
+                <div class="item-due">
+                  <span class="due-label" [ngStyle]="{ backgroundColor: formatDueDate(ipg.due_date, ipg.status).color, color: 'white' }">
+                    {{ formatDueDate(ipg.due_date, ipg.status).formattedDate }}
+                  </span>
+                </div>
+              </div>
+              
+            </div>
+            <div class="action-buttons">
+              <button class="btn btn-outline-secondary btn-sm" (click)="editTask(ipg.id)"><i class="fa-regular fa-pen-to-square"></i></button>
+              <button class="btn btn-outline-secondary btn-sm" (click)="deleteTask(ipg.id)"><i class="fa-regular fa-trash-can"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="todo-category"
+             cdkDropList
+             #doneList="cdkDropList"
+             [cdkDropListData]="donetable"
+             [cdkDropListConnectedTo]="[todoList, inprogressList]"
+             id="done"
+             (cdkDropListDropped)="drop($event)">
+          <div class="status">
+            <h5>Done</h5>
+            <h3 class="howmany">{{donelength}}</h3>
+          </div>
+   <div class="selectmo">
+    <button *ngIf="selectedTasks.size > 0 && currentContainer === 'done'" class="btn btn-outline-danger mb-2" (click)="deleteSelectedTasks()">Delete Selected</button>
+    <button *ngIf="selectedTasks.size > 0 && currentContainer !== 'done'" class="btn btn-outline-primary mb-2" (click)="moveSelectedTasks('done')">Move here</button>
+   </div>
+          <div *ngFor="let done of donetable" class="todo-item" cdkDrag [cdkDragData]="done">
+            <div class="sakop">
+              <label class="custom-checkbox">
+                <input type="checkbox" [id]="'done' + done.id" (change)="toggleSelection(done.id, 'done')">
+                <span class="checkmark"></span>
+              </label>
+              <div class="items">
+                <label [for]="'done' + done.id">{{done.title}}</label>
+                <div class="statis">
+                  <p class="done">DONE</p>
+                  <p class="dones">
+                     at {{done.done_at | date:'MMM d, y, h a'}}
+                  </p>
+                </div>
+                
+              </div>
+            </div>
+            <div class="action-buttons">
+              <button class="btn btn-outline-secondary btn-sm" (click)="editTask(done.id)"><i class="fa-regular fa-pen-to-square"></i></button>
+              <button class="btn btn-outline-secondary btn-sm" (click)="deleteTask(done.id)"><i class="fa-regular fa-trash-can"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+
+        <div class="modal fade" id="addTaskModal" #addTaskModal tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addTaskModalLabel">Add Task</h5>
+                        <button type="button" class="btn-close" #closeModalButton data-bs-dismiss="modal" aria-label="Close" ></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="form-container">
+            
+                            <p>Fill in the details and add your task.</p>
+                            <form [formGroup]="taskForm" (ngSubmit)="addTask()">
+                                <div class="form-group">
+                                    <label for="title">Title</label>
+                                    <input type="text" class="form-control" id="title" formControlName="title" placeholder="Enter task title" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="priority">Status</label>
+                                    <select class="form-control" id="priority" formControlName="status" required>
+                                        <option value="" disabled selected>Select Status</option>
+                                        <option value="todo">To do</option>
+                                        <option value="inprogress">In progress</option>
+                                        <option value="done">Done</option>
+                                    </select>
+                                    <div *ngIf="taskForm.get('status')?.invalid && taskForm.get('status')?.touched" class="text-danger">
+                                        Status is required.
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="description">Description</label>
+                                    <textarea class="form-control" id="description" rows="3" formControlName="description" placeholder="Enter task description" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="due-date">Due Date</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                        <input type="date" class="form-control" id="due-date" formControlName="due_date" required>
+                                    </div>
+                                </div>
+                                <div class="buttont">
+                                    <button type="submit" class="btn btn-primary">Add Task</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+    <div class="modal fade" id="addTaskModalw" #editTaskModal tabindex="-1" aria-labelledby="addTaskModalLabelw" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addTaskModalLabel">Edit Task</h5>
+                    <button type="button" class="btn-close" #closeEditButton data-bs-dismiss="modal" aria-label="Close" ></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-container">
+        
+                        <p>Fill in the inputs to edit your task</p>
+                        <form [formGroup]="taskForm" (ngSubmit)="updateTask()">
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input type="text" class="form-control" formControlName="title" id="title" placeholder="Enter task title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="priority">Status</label>
+                                <select class="form-control" id="priority" formControlName="status" required>
+                                    <option value="" disabled selected>Select Status</option>
+                                    <option value="todo">To do</option>
+                                    <option value="inprogress">In progress</option>
+                                    <option value="done">Done</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea class="form-control" id="description" formControlName="description" rows="3" placeholder="Enter task description" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="due-date">Due Date</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                    <input type="date" class="form-control" id="due-date" required formControlName="due_date">
+                                </div>
+                            </div>
+                            <div class="buttont">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

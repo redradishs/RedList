@@ -1,0 +1,37 @@
+<div class="container">
+    <div class="form-container">
+        <h3>Edit Task Name</h3>
+        <p>Edit your task in this page.</p>
+        <form>
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" class="form-control" id="title" placeholder="Enter task title">
+            </div>
+            <div class="form-group">
+                <label for="priority">Status</label>
+                <select class="form-control" id="priority">
+                    <option>Select Status</option>
+                    <option>To do</option>
+                    <option>In progress</option>
+                    <option>Done</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" rows="3" placeholder="Enter task description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="due-date">Due Date</label>
+                <div class="input-group">
+                       
+                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                 
+                    <input type="date" class="form-control" id="due-date">
+                </div>
+            </div>
+            <div class="buttont">
+                <button type="submit" class="btn">Add Task</button>
+            </div>
+        </form>
+    </div>
+</div>

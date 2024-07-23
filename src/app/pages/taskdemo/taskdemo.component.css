@@ -1,0 +1,17 @@
+.cardss {
+    background-color: gray;
+    color: white;
+    border: 1px solid black;
+    text-align: center;
+}
+
+.cardss span {
+    margin-top: 20px;
+    background-color: orange;
+    color: black;
+    border-radius: 20px;
+}
+
+.lagayan {
+    margin-top: 5%;
+}
